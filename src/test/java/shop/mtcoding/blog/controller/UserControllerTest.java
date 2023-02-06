@@ -1,19 +1,24 @@
 package shop.mtcoding.blog.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import javax.servlet.http.HttpSession;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import shop.mtcoding.blog.service.UserService;
+import shop.mtcoding.blog.model.User;
 
-@WebMvcTest(UserController.class)
+@AutoConfigureMockMvc
+@SpringBootTest(webEnvironment = WebEnvironment.MOCK)
 public class UserControllerTest {
 
     @Autowired
@@ -29,6 +34,22 @@ public class UserControllerTest {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE));
 
         // then
+        resultActions.andExpect(status().is3xxRedirection());
+    }
+
+    @Test
+    public void login_test() throws Exception {
+        // given
+        String requestBody = "username=ssar&password=1234";
+
+        // when
+        ResultActions resultActions = mvc.perform(post("/login").content(requestBody)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE));
+        HttpSession session = resultActions.andReturn().getRequest().getSession();
+        User principal = (User) session.getAttribute("principal");
+        // System.out.println(principal.getUsername()); 눈으로 확인용
+        // then
+        assertThat(principal.getUsername()).isEqualTo("ssar");
         resultActions.andExpect(status().is3xxRedirection());
     }
 }
