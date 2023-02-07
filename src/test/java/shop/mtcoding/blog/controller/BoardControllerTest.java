@@ -1,6 +1,5 @@
 package shop.mtcoding.blog.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -10,12 +9,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpSession;
-
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,7 +22,6 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ch.qos.logback.classic.layout.TTLLLayout;
 import shop.mtcoding.blog.dto.board.BoardResp;
 import shop.mtcoding.blog.model.User;
 
@@ -51,7 +45,7 @@ public class BoardControllerTest {
                 get("/"));
         Map<String, Object> map = resultActions.andReturn().getModelAndView().getModel();
         List<BoardResp.BoardMainRespDto> dtos = (List<BoardResp.BoardMainRespDto>) map.get("dtos");
-        String model = om.writeValueAsString("dtos");
+        String model = om.writeValueAsString(dtos);
         System.out.println("테스트 : " + model);
         // then
         resultActions.andExpect(status().isOk());
@@ -88,5 +82,20 @@ public class BoardControllerTest {
 
         // then
         resultActions.andExpect(status().is3xxRedirection());
+    }
+
+    @Test
+    public void detail_test() throws Exception {
+        // given
+        int id = 1;
+        // when
+        ResultActions resultActions = mvc.perform(
+                get("/board/id"));
+        Map map = resultActions.andReturn().getModelAndView().getModel();
+        BoardResp.BoardDetailRespDto dto = (BoardResp.BoardDetailRespDto) map.get("dto");
+        String model = om.writeValueAsString(dto);
+        System.out.println("테스트 : " + model);
+        // then
+        resultActions.andExpect(status().isOk());
     }
 }
