@@ -1,7 +1,5 @@
 package shop.mtcoding.blog.controller;
 
-import java.util.List;
-
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import shop.mtcoding.blog.dto.ResponseDto;
 import shop.mtcoding.blog.dto.board.BoardReq.BoardSaveReqDto;
+import shop.mtcoding.blog.dto.board.BoardReq.BoardUpdateReqDto;
 import shop.mtcoding.blog.handler.ex.CustomApiException;
 import shop.mtcoding.blog.handler.ex.CustomException;
 import shop.mtcoding.blog.model.BoardRepository;
@@ -86,8 +85,19 @@ public class BoardController {
         if (principal == null) {
             throw new CustomApiException("인증이 되지 않았습니다", HttpStatus.UNAUTHORIZED);
         }
-        boardService.게시글삭제(id);
+        boardService.게시글삭제(id, principal.getId());
         return new ResponseEntity<>(new ResponseDto<>(1, "삭제성공", null), HttpStatus.OK); // 실패했을 때는 service가 처리할 것이기 떄문에
         // 정상로직만!
+    }
+
+    @PostMapping("/board/{id}/update")
+    public String update(@PathVariable int id, BoardUpdateReqDto boardUpdateReqDto) {
+        User principal = (User) session.getAttribute("principal");
+        if (principal == null) {
+            throw new CustomException("인증이 되지 않았습니다", HttpStatus.UNAUTHORIZED);
+        }
+
+        boardService.게시글수정(id, principal.getId(), boardUpdateReqDto);
+        return "redirect:/";
     }
 }
