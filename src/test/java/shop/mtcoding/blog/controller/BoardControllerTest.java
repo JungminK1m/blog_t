@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import shop.mtcoding.blog.dto.board.BoardResp;
 import shop.mtcoding.blog.model.User;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK)
@@ -90,12 +91,36 @@ public class BoardControllerTest {
         int id = 1;
         // when
         ResultActions resultActions = mvc.perform(
-                get("/board/id"));
-        Map map = resultActions.andReturn().getModelAndView().getModel();
-        BoardResp.BoardDetailRespDto dto = (BoardResp.BoardDetailRespDto) map.get("dto");
-        String model = om.writeValueAsString(dto);
-        System.out.println("테스트 : " + model);
-        // then
+                post("/board/" + id).session(mockSession));
+
+        // then 302가 뜨는지 확인
+        resultActions.andExpect(status().is3xxRedirection());
+
+        // 내가 쓴 것
+        // given
+        // int id = 1;
+        // when
+        // ResultActions resultActions = mvc.perform(
+        // get("/board/id"));
+        // Map map = resultActions.andReturn().getModelAndView().getModel();
+        // BoardResp.BoardDetailRespDto dto = (BoardResp.BoardDetailRespDto)
+        // map.get("dto");
+        // String model = om.writeValueAsString(dto);
+        // System.out.println("테스트 : " + model);
+        // // then
+        // resultActions.andExpect(status().isOk());
+    }
+
+    @Test
+    public void delete_test() throws Exception {
+        // given
+        int id = 1;
+        // when
+        ResultActions resultActions = mvc.perform(
+                delete("/board/" + id).session(mockSession));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+        // then 302가 뜨는지 확인
         resultActions.andExpect(status().isOk());
     }
 }
