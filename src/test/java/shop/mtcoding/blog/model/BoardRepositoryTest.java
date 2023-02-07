@@ -1,5 +1,7 @@
 package shop.mtcoding.blog.model;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -22,11 +24,11 @@ public class BoardRepositoryTest {
         ObjectMapper om = new ObjectMapper();
 
         // when
-        List<BoardMainRespDto> boardMainRespDtos = boardRepository.findAllWithUser();
-        System.out.println("테스트 : size : " + boardMainRespDtos.size());
-        String reponseBody = om.writeValueAsString(boardMainRespDtos);
-        System.out.println("테스트 : " + reponseBody);
+        List<BoardMainRespDto> BoardMainRespDto = boardRepository.findAllWithUser();
+        String responseBody = om.writeValueAsString(BoardMainRespDto);
+        System.out.println("테스트 : " + responseBody);
 
         // then
+        assertThat(BoardMainRespDto.get(5).getUsername()).isEqualTo("love");
     }
 }
